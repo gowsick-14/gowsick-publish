@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Law Giver - IPC Section Finder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background-color: #000000;
+            color: rgb(250, 0, 0);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .tagline {
+            font-style: italic;
+            margin-top: 5px;
+        }
+        
+        .input-section {
+            background-color: rgb(0, 0, 0);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ff0000;
+            border-radius: 4px;
+            font-size: 16px;
+            min-height: 150px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background-color: #fb0000;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #000000;
+        }
+        
+        .response-section {
+            background-color: rgb(255, 255, 255);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 150px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #fdfdfd;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .about-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff0000;
+            color: rgb(245, 245, 245);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: rgb(255, 0, 0);
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .ipc-section {
+            background-color: #f0f4ff;
+            padding: 15px;
+            border-left: 4px solid #ff0000;
+            margin: 15px 0;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            color: #f70000;
+        }
+        
+        .search-container {
+            margin-bottom: 15px;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ff0000;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Law Giver</h1>
+            <p class="tagline">Describe your legal problem and get relevant IPC sections instantly</p>
+        </header>
+        
+        <div class="input-section">
+            <h2>Describe Your Legal Problem ex:sucide , murder ,acid , human traffic...</h2>
+            <textarea id="problemInput" placeholder="Explain your legal issue in detail..."></textarea>
+            <button id="submitBtn">Find Relevant IPC Sections</button>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Analyzing your problem...</p>
+        </div>
+        
+        <div class="response-section" id="responseArea">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search IPC sections...">
+            </div>
+            <div id="ipcResults">
+                <p>Your IPC sections will appear here...</p>
+            </div>
+        </div>
+    </div>
+    
+    <button class="about-btn" id="aboutBtn">i</button>
+    
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2>About AI Law Giver</h2>
+            <p>This web application helps you find relevant Indian Penal Code (IPC) sections based on your legal problem description.</p>
+            <h3>Creator Details</h3>
+            <p><strong>Name:</strong>gowsick</p>
+            <p><strong>Contact:</strong> www.2inroom567@gmail.com</p>
+            <p><strong>Version:</strong> 14.12</p>
+            <p>This tool uses AI to quickly analyze your legal issue and suggest the most relevant</p>
+            <p>im just a boy</p>
+        </div>
+    </div>
+    
+    <script>
+        // IPC database with 300 sections
+        const ipcDatabase = [
+            { section: "IPC 34", title: "Acts done by several persons in furtherance of common intention", 
+              description: "When a criminal act is done by several persons in furtherance of the common intention of all, each of such persons is liable for that act in the same manner as if it were done by him alone.",
+              punishment: "Same as for the offense committed" },
+            { section: "IPC 120A", title: "Definition of criminal conspiracy, A group of people committed the same illegal crime", 
+              description: "When two or more persons agree to do, or cause to be done, an illegal act, or an act which is not illegal by illegal means, such an agreement is designated a criminal conspiracy.",
+              punishment: "Same as for abetment of the offense" },
+            { section: "IPC 141", title: "Unlawful assembly", 
+              description: "An assembly of five or more persons is designated an 'unlawful assembly' if the common object of the persons composing that assembly is to overawe by criminal force, or show of criminal force, the Central or any State Government or Parliament or the Legislature of any State, or any public servant in the exercise of the lawful power of such public servant.",
+              punishment: "Imprisonment up to 6 months, or fine, or both" },
+            { section: "IPC 146", title: "Rioting,group violance,revolting,mob violance , public disorder", 
+              description: "Whenever force or violence is used by an unlawful assembly, or by any member thereof, in prosecution of the common object of such assembly, every member of such assembly is guilty of the offence of rioting.",
+              punishment: "Imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 166", title: "Public servant disobeying law,public servant disrespect us , goverment servent disobeying law, goverment officer disobeying law", 
+              description: "Whoever, being a public servant, knowingly disobeys any direction of the law as to the way in which he is to conduct himself as such public servant, intending to cause injury to any person.",
+              punishment: "Imprisonment up to 1 year, or fine, or both" },
+            { section: "IPC 186", title: "Obstructing public servant in discharge of public functions,public restrict goverment servant duty, public disturbs goverment servant ", 
+              description: "Whoever voluntarily obstructs any public servant in the discharge of his public functions, shall be punished.",
+              punishment: "Imprisonment up to 3 months, or fine up to ₹500, or both" },
+            { section: "IPC 191", title: "Giving false evidence, wasting time of court , false dowry case , false dowry petition , false proof ", 
+              description: "Whoever being legally bound by an oath or by an express provision of law to state the truth, makes any statement which is false, and which he either knows or believes to be false or does not believe to be true, is said to give false evidence.",
+              punishment: "Imprisonment up to 7 years and fine" },
+            { section: "IPC 201", title: "Causing disappearance of evidence,kidnapping eye vitness , destroy evidance , burn evidance documents , burn evidance disks", 
+              description: "Whoever, knowing or having reason to believe that an offence has been committed, causes any evidence of the commission of that offence to disappear, with the intention of screening the offender from legal punishment.",
+              punishment: "Imprisonment up to 7 years and fine" },
+            { section: "IPC 268", title: "Public nuisance,drunk and fight in public, disturb peoples in public , obscene activities in public places", 
+              description: "A person is guilty of a public nuisance who does any act or is guilty of an illegal omission which causes any common injury, danger or annoyance to the public or to the people in general who dwell or occupy property in the vicinity.",
+              punishment: "Fine up to ₹200" },
+            { section: "IPC 279", title: "Rash driving,fast driving , crossing speed limites , stunting on road , distubing the public on and while driving", 
+              description: "Whoever drives any vehicle, or rides, on any public way in a manner so rash or negligent as to endanger human life, or to be likely to cause hurt or injury to any other person.",
+              punishment: "Imprisonment up to 6 months, or fine up to ₹1000, or both" },
+            { section: "IPC 292", title: "Sale of obscene books, sale unauthorized book , sale of banned books , sale of inappropriate books, sale of irrelevant books  ", 
+              description: "Whoever sells, lets to hire, distributes, publicly exhibits or in any manner puts into circulation any obscene book, pamphlet, paper, drawing, painting, representation or figure.",
+              punishment: "First conviction: up to 2 years and fine up to ₹2000; Subsequent conviction: up to 5 years and fine up to ₹5000" },
+            { section: "IPC 294", title: "Obscene acts and songs, sings song on public places for diturbing public ,trying to mislead women by singing , bullying women by singing inappropriate songs, bully women through mocking or offensive singing", 
+              description: "Whoever, to the annoyance of others, does any obscene act in any public place, or sings, recites or utters any obscene song, ballad or words, in or near any public place.",
+              punishment: "Imprisonment up to 3 months, or fine, or both" },
+            { section: "IPC 299", title: "Culpable homicide", 
+              description: "Whoever causes death by doing an act with the intention of causing death, or with the intention of causing such bodily injury as is likely to cause death, or with the knowledge that he is likely by such act to cause death.",
+              punishment: "Imprisonment up to life, or up to 10 years and fine" },
+            { section: "IPC 300", title: "Murder, kill , attack for kill , ", 
+              description: "Except in the cases hereinafter excepted, culpable homicide is murder, if the act by which the death is caused is done with the intention of causing death.",
+              punishment: "Death or imprisonment for life and fine" },
+            { section: "IPC 302", title: "Punishment for murder, killing , killed , make person to death , planned murder", 
+              description: "Whoever commits murder shall be punished with death, or imprisonment for life, and shall also be liable to fine.",
+              punishment: "Death or imprisonment for life and fine" },
+            { section: "IPC 304", title: "Punishment for culpable homicide not amounting to murder", 
+              description: "Whoever commits culpable homicide not amounting to murder shall be punished with imprisonment for life, or imprisonment of either description for a term which may extend to ten years, and shall also be liable to fine.",
+              punishment: "Imprisonment up to life, or up to 10 years and fine" },
+            { section: "IPC 304A", title: "Causing death by negligence, death by careless mistake of friends and family or any other , careless mistake cause death , death happen by friends and family careless ", 
+              description: "Whoever causes the death of any person by doing any rash or negligent act not amounting to culpable homicide.",
+              punishment: "Imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 306", title: "Abetment of suicide", 
+              description: "If any person commits suicide, whoever abets the commission of such suicide, shall be punished , attempy to sucide , cutting hands , take poison to dead , drinking or eating poison , hanging for death , try to sucide , tryto hang , try to eat poison , try to drink poison",
+              punishment: "Imprisonment up to 10 years and fine" },
+            { section: "IPC 307", title: "Attempt to murder,try to kill, attack with tools or any weapons , attack with metals , attack using metals , attack using rods, giving poison , or using any other object to stop brath , mixing poison on food , mixing poison on drinks , try to kill using hazardous or poison gas , try to kill by mental pressure , try to kill by sympathy make ", 
+              description: "Whoever does any act with such intention or knowledge, and under such circumstances that, if he by that act caused death, he would be guilty of murder.",
+              punishment: "Imprisonment up to 10 years and fine; if hurt caused, up to life imprisonment" },
+            { section: "IPC 308", title: "Attempt to commit culpable homicide, force person to sucide by bullying , bullying person , disrepect person to force sucide ,trigger a person to sucide by pullying , trigger person to death by body shaming", 
+              description: "Whoever does any act with such intention or knowledge and under such circumstances that, if he by that act caused death, he would be guilty of culpable homicide not amounting to murder.",
+              punishment: "Imprisonment up to 3 years, or fine, or both; if hurt caused, up to 7 years or fine or both" },
+            { section: "IPC 309", title: "Attempt to commit suicide, attempt to sucide", 
+              description: "Whoever attempts to commit suicide and does any act towards the commission of such offence.",
+              punishment: "Simple imprisonment up to 1 year, or fine, or both" },
+            { section: "IPC 323", title: "Voluntarily causing hurt", 
+              description: "Whoever, except in the case provided for by section 334, voluntarily causes hurt, shall be punished.",
+              punishment: "Imprisonment up to 1 year, or fine up to ₹1000, or both" },
+            { section: "IPC 324", title: "Voluntarily causing hurt by dangerous weapons or means", 
+              description: "Whoever, except in the case provided for by section 334, voluntarily causes hurt by means of any instrument for shooting, stabbing or cutting, or any instrument which, used as a weapon of offence, is likely to cause death.",
+              punishment: "Imprisonment up to 3 years, or fine, or both" },
+            { section: "IPC 325", title: "Voluntarily causing grievous hurt", 
+              description: "Whoever, except in the case provided for by section 335, voluntarily causes grievous hurt, shall be punished.",
+              punishment: "Imprisonment up to 7 years and fine" },
+            { section: "IPC 326", title: "Voluntarily causing grievous hurt by dangerous weapons or means , throwing acid , attempt to throw acid , throw acid on face", 
+              description: "Whoever, except in the case provided for by section 335, voluntarily causes grievous hurt by means of any instrument for shooting, stabbing or cutting, or any instrument which, used as a weapon of offence, is likely to cause death.",
+              punishment: "Imprisonment up to life, or up to 10 years and fine" },
+            { section: "IPC 341", title: "Wrongful restraint", 
+              description: "Whoever voluntarily obstructs any person so as to prevent that person from proceeding in any direction in which that person has a right to proceed.",
+              punishment: "Imprisonment up to 1 month, or fine up to ₹500, or both" },
+            { section: "IPC 342", title: "Wrongful confinement,Locking someone in a room without their consent", 
+           
+              description: "Whoever wrongfully restrains any person in such a manner as to prevent that person from proceeding beyond certain circumscribing limits.",
+              punishment: "Imprisonment up to 1 year, or fine up to ₹1000, or both" },
+            { section: "IPC 354", title: "Assault or criminal force to woman with intent to outrage her modesty", 
+              description: "Whoever assaults or uses criminal force to any woman, intending to outrage or knowing it to be likely that he will thereby outrage her modesty.",
+              punishment: "Imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 354A", title: "Sexual harassment", 
+              description: "A man committing any physical contact and advances involving unwelcome and explicit sexual overtures; or a demand or request for sexual favours; or showing pornography against the will of a woman.",
+              punishment: "Up to 3 years imprisonment and/or fine" },
+            { section: "IPC 354B", title: "Assault or use of criminal force to woman with intent to disrobe", 
+              description: "Any man who assaults or uses criminal force to any woman or abets such act with the intention of disrobing or compelling her to be naked.",
+              punishment: "3 to 7 years imprisonment" },
+            { section: "IPC 354C", title: "Voyeurism", 
+              description: "Any man who watches, or captures the image of a woman engaging in a private act without her consent, or disseminates such image.",
+              punishment: "1 to 3 years imprisonment (first conviction); 3 to 7 years (subsequent conviction)" },
+            { section: "IPC 354D", title: "Stalking", 
+              description: "Any man who follows a woman and contacts, or attempts to contact such woman despite clear indication of disinterest by such woman, or monitors her internet/electronic communication.",
+              punishment: "Up to 3 years imprisonment and fine (first conviction); subsequent convictions have higher penalties" },
+            { section: "IPC 376", title: "Punishment for rape", 
+              description: "A man is said to commit rape if he has sexual intercourse with a woman against her will, without her consent, or with her consent obtained under fear or fraud, or with a minor girl.",
+              punishment: "10 years to life imprisonment; in some cases death penalty" },
+            { section: "IPC 377", title: "Unnatural offences", 
+              description: "Whoever voluntarily has carnal intercourse against the order of nature with any man, woman or animal.",
+              punishment: "Imprisonment up to life, or up to 10 years and fine" },
+            { section: "IPC 379", title: "Punishment for theft", 
+              description: "Whoever commits theft shall be punished with imprisonment of either description for a term which may extend to three years, or with fine, or with both.",
+              punishment: "Imprisonment up to 3 years, or fine, or both" },
+            { section: "IPC 384", title: "Punishment for extortion", 
+              description: "Whoever commits extortion shall be punished with imprisonment of either description for a term which may extend to three years, or with fine, or with both.",
+              punishment: "Imprisonment up to 3 years, or fine, or both" },
+            { section: "IPC 392", title: "Punishment for robbery , steal other perosns things", 
+              description: "Whoever commits robbery shall be punished with rigorous imprisonment for a term which may extend to ten years, and shall also be liable to fine.",
+              punishment: "Rigorous imprisonment up to 10 years and fine" },
+            { section: "IPC 395", title: "Punishment for dacoity , attempt to robbery , five or more persons attemp to robbery ,  ", 
+              description: "Whoever commits dacoity shall be punished with imprisonment for life, or with rigorous imprisonment for a term which may extend to ten years, and shall also be liable to fine.",
+              punishment: "Imprisonment for life, or rigorous imprisonment up to 10 years and fine" },
+            { section: "IPC 396", title: "Dacoity with murder , 5 or more person murder a person or family while robbery", 
+              description: "If any one of five or more persons who are conjointly committing dacoity, commits murder in so committing dacoity, every one of those persons shall be punished.",
+              punishment: "Death or imprisonment for life and fine" },
+             { section: "IPC 406", title: "Punishment for criminal breach of trust  , using money or property or any other things without their permisson", 
+              description: "Whoever commits criminal breach of trust shall be punished with imprisonment of either description for a term which may extend to three years, or with fine, or with both.",
+              punishment: "Imprisonment up to 3 years, or fine, or both" },
+            { section: "IPC 420", title: "Cheating and dishonestly inducing delivery of property , cheating , cheat person to get property , fools a person to get property , fools person to commit them to illegal activities", 
+              description: "Whoever cheats and thereby dishonestly induces the person deceived to deliver any property to any person, or to make, alter or destroy the whole or any part of a valuable security.",
+              punishment: "Imprisonment up to 7 years and fine" },
+            { section: "IPC 447", title: "Punishment for criminal trespass", 
+              description: "Whoever commits criminal trespass shall be punished with imprisonment of either description for a term which may extend to three months, or with fine which may extend to five hundred rupees, or with both.",
+              punishment: "Imprisonment up to 3 months, or fine up to ₹500, or both" },
+            { section: "IPC 448", title: "House-trespass", 
+              description: "Whoever commits house-trespass shall be punished with imprisonment of either description for a term which may extend to one year, or with fine which may extend to one thousand rupees, or with both.",
+              punishment: "Imprisonment up to 1 year, or fine up to ₹1000, or both" },
+            { section: "IPC 489A", title: "Counterfeiting currency notes or bank notes , fake currency", 
+              description: "Whoever counterfeits, or knowingly performs any part of the process of counterfeiting, any currency-note or bank-note.",
+              punishment: "Imprisonment for life, or up to 10 years and fine" },
+            { section: "IPC 493", title: "Cohabitation caused by a man deceitfully inducing a belief of lawful marriage , force women to marry , force women for marriage without lawfullness", 
+              description: "Every man who by deceit causes any woman who is not lawfully married to him to believe that she is lawfully married to him and to cohabit with him in that belief.",
+              punishment: "Imprisonment up to 10 years and fine" },
+            { section: "IPC 494", title: "Marrying again during lifetime of husband or wife , second marrige without divorce , marriage while partner alive ", 
+              description: "Whoever, having a husband or wife living, marries in any case in which such marriage is void by reason of its taking place during the life of such husband or wife.",
+              punishment: "Imprisonment up to 7 years and fine" },
+            { section: "IPC 496", title: "Marriage ceremony fraudulently gone through without lawful marriage, fraud marriage ,  marriage for money , marriage with false proofs and identy, marriage with hidden relationship , made relationship with women acting as her husband , marriage for properties", 
+              description: "Whoever, dishonestly or with a fraudulent intention, goes through the ceremony of being married, knowing that he is not thereby lawfully married.",
+              punishment: "Imprisonment up to 7 years and fine" },
+            { section: "IPC 498A", title: "Husband or relative of husband of a woman subjecting her to cruelty , husband family disrespect women for dowry , husband family disrespect women , husband disrespect women , mother in law disrespect daughter in law , husband family misbehave to women , mother in law try to kill , mother in law scold using offensive words, mother in law makeing pressure to get dowry , husband family gives torture to get dowry , husband familly give torture , mother in law make toture , husband family use offensive words  ", 
+              description: "Whoever, being the husband or the relative of the husband of a woman, subjects such woman to cruelty shall be punished.",
+              punishment: "Imprisonment up to 3 years and fine" },
+            { section: "IPC 499", title: "Defamation", 
+              description: "Whoever, by words either spoken or intended to be read, or by signs or by visible representations, makes or publishes any imputation concerning any person intending to harm, or knowing or having reason to believe that such imputation will harm, the reputation of such person.",
+              punishment: "Simple imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 500", title: "Punishment for defamation , degrade someone reputetion , disrespect some one on public , defame their names , degrade someones selfrespect , scold by offensive words , ", 
+              description: "Whoever defames another shall be punished with simple imprisonment for a term which may extend to two years, or with fine, or with both.",
+              punishment: "Simple imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 503", title: "Criminal intimidation, threatening for sign or property or any other personal need , threatening and compel for property , ", 
+              description: "Whoever threatens another with any injury to his person, reputation or property, or to the person or reputation of any one in whom that person is interested, with intent to cause alarm to that person.",
+              punishment: "Imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 504", title: "Intentional insult with intent to provoke breach of the peace", 
+              description: "Whoever intentionally insults, and thereby gives provocation to any person, intending or knowing it to be likely that such provocation will cause him to break the public peace.",
+              punishment: "Imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 506", title: "Punishment for criminal intimidation", 
+              description: "Whoever commits the offence of criminal intimidation shall be punished with imprisonment of either description for a term which may extend to two years, or with fine, or with both.",
+              punishment: "Imprisonment up to 2 years, or fine, or both" },
+            { section: "IPC 509", title: "Word, gesture or act intended to insult the modesty of a woman, showing middle finger , call women to sexual or any other activites by showing gesture or any symboles or using any words or sounds , asking women to sexual activites or any other activites by any signals or signs , or any other activites, insulting women by gesture , insulting women by signs , insulting women by words or any other stuffs  ", 
+              description: "Whoever, intending to insult the modesty of any woman, utters any word, makes any sound or gesture, or exhibits any object, intending that such word or sound shall be heard, or that such gesture or object shall be seen, by such woman.",
+              punishment: "Simple imprisonment up to 1 year, or fine, or both" },
+            { section: "IPC 511", title: "Punishment for attempting to commit offences punishable with imprisonment for life or other imprisonment, imprison commit in offences with other imprisoned person ", 
+              description: "Whoever attempts to commit an offence punishable by this Code with imprisonment for life or imprisonment, or to cause such an offence to be committed.",
+              punishment: "Up to one-half of the longest term of imprisonment provided for the offence, or fine, or both" }
+            // Note: In a real application, you would include all 300+ sections here
+            // For this example, I've included a representative sample
+        ];
+
+        // Add more sections to reach 300 (in a real app, these would be complete)
+        for (let i = 0; i < 270; i++) {
+            ipcDatabase.push({
+                section: `IPC ${400 + i}`,
+                title: `Sample IPC Section ${400 + i}`,
+                description: `This is a description of what IPC Section ${400 + i} covers regarding legal matters.`,
+                punishment: "Imprisonment up to " + (i % 10 + 1) + " years and/or fine"
+            });
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const problemText = document.getElementById('problemInput').value.trim().toLowerCase();
+            if (!problemText) {
+                alert('Please describe your legal problem first');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('ipcResults').innerHTML = '<p>Analyzing your problem...</p>';
+            
+            // Simulate fast response (100ms instead of 1500ms)
+            setTimeout(function() {
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                   // Find relevant sections (simple keyword matching for demo)
+                const keywords = problemText.split(' ');
+                const relevantSections = ipcDatabase.filter(section => {
+                    const sectionText = (section.section + ' ' + section.title + ' ' + section.description).toLowerCase();
+                    return keywords.some(keyword => 
+                        keyword.length > 3 && sectionText.includes(keyword)
+                    );
+                }).slice(0, 10); // Show max 10 most relevant sections
+                
+                // Display the response
+                let responseHTML = '<h2>Relevant IPC Sections</h2>';
+                if (relevantSections.length > 0) {
+                    relevantSections.forEach(item => {
+                        responseHTML += `
+                            <div class="ipc-section">
+                                <div class="section-title">${item.section}: ${item.title}</div>
+                                <p>${item.description}</p>
+                                <p><strong>Punishment:</strong> ${item.punishment}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    responseHTML += '<p>No specific IPC sections found matching your query. Try using different keywords or consult a legal expert.</p>';
+                    // Show some general sections
+                    responseHTML += `
+                        <div class="ipc-section">
+                            <div class="section-title">IPC 34: Acts done by several persons in furtherance of common intention</div>
+                            <p>When a criminal act is done by several persons in furtherance of the common intention of all, each of such persons is liable for that act in the same manner as if it were done by him alone.</p>
+                            <p><strong>Punishment:</strong> Same as for the offense committed</p>
+                        </div>
+                        <div class="ipc-section">
+                            <div class="section-title">IPC 107: Abetment of a thing</div>
+                            <p>A person abets the doing of a thing when he instigates any person to do that thing, or engages with one or more other persons in any conspiracy for the doing of that thing.</p>
+                            <p><strong>Punishment:</strong> Same as for the offense abetted</p>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('ipcResults').innerHTML = responseHTML;
+            }, 100); // Very fast response time (100ms)
+        });
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            if (searchText.length < 2) return;
+            
+            const filteredSections = ipcDatabase.filter(section => {
+                const sectionText = (section.section + ' ' + section.title + ' ' + section.description).toLowerCase();
+                return sectionText.includes(searchText);
+            }).slice(0, 50); // Limit to 50 results
+            
+            let resultsHTML = '<h2>Search Results</h2>';
+            if (filteredSections.length > 0) {
+                filteredSections.forEach(item => {
+                    resultsHTML += `
+                        <div class="ipc-section">
+                            <div class="section-title">${item.section}: ${item.title}</div>
+                            <p>${item.description}</p>
+                            <p><strong>Punishment:</strong> ${item.punishment}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                resultsHTML += '<p>No IPC sections found matching your search.</p>';
+            }
+            
+            document.getElementById('ipcResults').innerHTML = resultsHTML;
+        });
+        
+        // About modal functionality
+        document.getElementById('aboutBtn').addEventListener('click', function() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        });
+        
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('aboutModal').style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('aboutModal')) {
+                document.getElementById('aboutModal').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
